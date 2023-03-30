@@ -18,6 +18,13 @@ News
    </form>
 
    <hr>
+
+    {% if perms.news.add_post %}
+    <a href="{% url 'news_create' %}">Добавить новость</a>
+    <hr>
+    <a href="{% url 'articles_create' %}">Добавить статью</a>
+    {% endif %}
+
    {% if posts %}
        <table>
            <tr>
@@ -31,6 +38,15 @@ News
                <td>{{ post.title|censor }}</td>
                <td>{{ post.time_create|date:'d M Y' }}</td>
                <td>{{ post.text|truncatewords:20|censor }}</td>
+
+                               <td>
+                    {% if perms.news.change_post %}
+                    <a href="{% url 'news_update' pk=post.id %}">Изменить</a>
+                    {% endif %}
+                    {% if perms.news.delete_post %}
+                    <a href="{% url 'post_delete' post.id %}">Удалить</a>
+                    {% endif %}
+                </td>
            </tr>
            {% endfor %}
 
