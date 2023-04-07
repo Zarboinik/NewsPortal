@@ -11,21 +11,13 @@ News
    <h1>Новости</h1>
    <h3>Всего новостей:  {{ posts|length|default_if_none:"0" }}</h3>
 
-   <form action="" method="get">
-       {{ filterset.form.as_p }}
-
-       <input type="submit" value="Найти" />
-   </form>
+    {% if is_not_subscriber %}
+        <p class="text-center"><a href="{% url 'subscribe' category.id%}" class="btn btn-secondary btn-sm">Подписаться</a></p>
+    {% endif %}
 
    <hr>
 
-    {% if perms.news.add_post %}
-    <a href="{% url 'news_create' %}">Добавить новость</a>
-    <hr>
-    <a href="{% url 'articles_create' %}">Добавить статью</a>
-    {% endif %}
-
-   {% if posts %}
+   {% if category_news_list %}
        <table>
            <tr>
                <td>Заголовок</td>
@@ -33,22 +25,11 @@ News
                <td>Краткий текст</td>
            </tr>
 
-           {% for post in posts %}
+           {% for post in category_news_list %}
            <tr>
                <td>{{ post.title|censor }}</td>
                <td>{{ post.time_create|date:'d M Y' }}</td>
                <td>{{ post.text|truncatewords:20|censor }}</td>
-
-
-               <td>
-                    {% if perms.news.change_post %}
-                    <a href="{% url 'news_update' pk=post.id %}">Изменить</a>
-                    {% endif %}
-                    {% if perms.news.delete_post %}
-                    <a href="{% url 'post_delete' post.id %}">Удалить</a>
-                    {% endif %}
-               </td>
-
                <td>
                    {%for category in post.category.all %}
                     <a href="{% url 'category_list' category.id %}">{{ category }} </a>

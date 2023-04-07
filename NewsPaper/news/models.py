@@ -26,6 +26,10 @@ class Author(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=255, unique=True)
+    subscribers = models.ManyToManyField(User, related_name='categories', blank=True)
+
+    def get_category(self):
+        return self.name
 
     def __str__(self):
         return self.name
@@ -35,7 +39,7 @@ class Post(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     category_type = models.CharField(max_length=50)
     time_create = models.DateTimeField(auto_now_add=True)
-    category = models.ManyToManyField(Category, blank=True, through='PostCategory', related_name='posts')
+    category = models.ManyToManyField(Category, blank=True, through='PostCategory', related_name='category')
     title = models.CharField(max_length=255)
     text = models.TextField(default='Здесь могла быть статья')
     rating = models.IntegerField(default=0)
@@ -59,7 +63,7 @@ class Post(models.Model):
         return f'{self.title.title()}: {self.author}'
 
     def get_absolute_url(self):
-        return reverse('post_detail', args=[str(self.id)])
+        return f'/{self.id}'
 
 
 class PostCategory(models.Model):
@@ -84,3 +88,16 @@ class Comment(models.Model):
 
     def __str__(self):
         return f'{self.user.title()}: {self.post}'
+
+
+class Subscriber(models.Model):
+    user = models.ForeignKey(
+        to=User,
+        on_delete=models.CASCADE,
+        related_name='subscriptions',
+    )
+    category = models.ForeignKey(
+        to='Category',
+        on_delete=models.CASCADE,
+        related_name='subscriptions',
+    )
