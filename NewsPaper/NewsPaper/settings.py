@@ -177,3 +177,132 @@ CELERY_RESULT_BACKEND = 'redis://redis_link'
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.path.join(BASE_DIR, 'cache_files'),
+    }
+}
+
+ADMINS = [("John", "john@example.com"), ("Mary", "mary@example.com")]
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'loggers': {
+        'django': {
+            'handlers': ['console_DEBUG', 'console_WARNING', 'console_ERROR', 'general_file'],
+            'level': 'DEBUG',
+        },
+
+        'django.request': {
+            'handlers': ['errors_file', 'mail_admins'],
+            'level': 'ERROR',
+        },
+        'django.server': {
+            'handlers': ['errors_file', 'mail_admins'],
+            'level': 'ERROR',
+        },
+        'django.template': {
+            'handlers': ['errors_file'],
+            'level': 'ERROR',
+        },
+        'django.db.backends': {
+            'handlers': ['errors_file'],
+            'level': 'ERROR',
+        },
+        'django.security': {
+            'handlers': ['security_file'],
+            'level': 'INFO',
+        },
+    },
+
+    'handlers': {
+        'console_DEBUG': {
+            # Заменить на DEBUG, но тогда много "шума"
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'filters': ['require_debug_true'],
+            'formatter': 'console_debug_formatter'
+        },
+        'console_WARNING': {
+            'level': 'WARNING',
+            'class': 'logging.StreamHandler',
+            'filters': ['require_debug_true'],
+            'formatter': 'console_warning_formatter'
+        },
+        'console_ERROR': {
+            'level': 'ERROR',
+            'class': 'logging.StreamHandler',
+            'filters': ['require_debug_true'],
+            'formatter': 'console_error_formatter'
+        },
+        'general_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filters': ['require_debug_false'],
+            'filename': 'general.log',
+            'formatter': 'general_file_formatter',
+        },
+        'errors_file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': 'errors.log',
+            'formatter': 'errors_file_formatter'
+        },
+        'security_file': {
+            'class': 'logging.FileHandler',
+            'filename': 'security.log',
+            'formatter': 'security_file_formatter',
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'filters': ['require_debug_false'],
+            'formatter': 'mail_admins_formatter',
+        }
+
+    },
+    'formatters': {
+        'console_debug_formatter': {
+            'format': '[%(asctime)s] %(levelname)s %(message)s',
+            'date_format': '%Y-%m-%d %H:%M:%S'
+        },
+        'console_warning_formatter': {
+            'format': '[%(asctime)s] %(levelname)s %(message)s %(pathname)s',
+            'date_format': '%Y-%m-%d %H:%M:%S'
+        },
+        'console_error_formatter': {
+            'format': '[%(asctime)s] %(levelname)s %(message)s %(pathname)s %(exc_info)s',
+            'date_format': '%Y-%m-%d %H:%M:%S'
+        },
+        'general_file_formatter': {
+            'format': '[%(asctime)s] %(levelname)s %(module)s %(message)s',
+            'date_format': '%Y-%m-%d %H:%M:%S'
+        },
+        'errors_file_formatter': {
+            'format': '[%(asctime)s] %(levelname)s %(message)s %(pathname)s %(exc_info)s',
+            'date_format': '%Y-%m-%d %H:%M:%S'
+        },
+        'security_file_formatter': {
+            'format': '[%(asctime)s] %(levelname)s %(module)s %(message)s',
+            'date_format': '%Y-%m-%d %H:%M:%S',
+        },
+        'mail_admins_formatter': {
+            'format': '[%(asctime)s] %(levelname)s %(message)s %(pathname)s',
+            'date_format': '%Y-%m-%d %H:%M:%S',
+        },
+
+    },
+
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+    },
+
+}
